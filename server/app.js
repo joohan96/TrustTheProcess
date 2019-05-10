@@ -26,6 +26,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 app.set('view engine', 'ejs');
 
+require('./routes/pdf.routes.js')(app);
 require('./routes/routes.js')(app, passport);
 
 app.listen(port);
