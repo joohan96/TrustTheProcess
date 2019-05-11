@@ -1,35 +1,35 @@
 var express = require('express');
-var app = express();
-var port = 3001
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var morgan = require('morgan');
-var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var passport = require('passport');
-var flash = require('connect-flash');
+var cors = require('cors');
 
-var configDB = require('./config/database.js');
-mongoose.connect(configDB.url);
-require('./config/passport')(passport);
+var index = require('./routes/index');
 
-app.use(morgan('dev'));
+var app = express();
+
+var corsOption = {
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    exposedHeaders: ['x-auth-token']
+};
+app.use(cors(corsOption));
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({secret: 'anystringoftext',
-				 saveUninitialized: true,
-				 resave: true}));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use('/api/v1/', index);
 
-app.set('view engine', 'ejs');
-
-require('./routes/pdf.routes.js')(app);
-require('./routes/routes.js')(app, passport);
-
-app.listen(port);
-console.log('Server running on port: ' + port);
-
-
+module.exports = app;

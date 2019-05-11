@@ -1,65 +1,67 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import FacebookLogin from 'react-facebook-login';
+import config from './config.json';
 
-class App extends React.Component {
+class App extends Component {
 
-
-  constructor(props) {
-      super(props);
-      this.state = {
-      };
+  constructor() {
+    super();
+    this.state = { isAuthenticated: false, user: null, token: '' };
   }
-  
 
-  login() {
-    // HTTPS might get blocked by CORS
-     return fetch('http://127.0.0.1:3001/auth/facebook')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log(responseJson);
-      // user profile from mongodb
+  logout = () => {
+    this.setState({ isAuthenticated: false, token: '', user: null })
+  };
+  onFailure = (error) => {
+    alert(error);
+  };
+
+  facebookResponse = (response) => {
+    const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], { type: 'application/json' });
+    const options = {
+      method: 'POST',
+      body: tokenBlob,
+      mode: 'cors',
+      cache: 'default'
+    };
+    fetch('http://localhost:3001/api/v1/auth/facebook', options).then(r => {
+      const token = r.headers.get('x-auth-token');
+      r.json().then(user => {
+        if (token) {
+          this.setState({ isAuthenticated: true, user, token })
+        }
+      });
     })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
-  
+  };
 
   render() {
+    let content = !!this.state.isAuthenticated ?
+      (
+        <div>
+          <p>Welcome to TrustTheProcess, {this.state.user.fullName} </p>
+          <div>
+            <button onClick={this.logout} className="button">
+              Log out
+                        </button>
+          </div>
+        </div>
+      ) :
+      (
+        <div>
+          <FacebookLogin
+            appId={config.FACEBOOK_APP_ID}
+            autoLoad={false}
+            fields="name,email,picture"
+            callback={this.facebookResponse} />
+        </div>
+      );
+
     return (
-      <div className="inner-container">
-        <div className="header">
-          Template
-        </div>
-        <div className="box">
-
-          <div className="input-group">
-            <label htmlFor="username">Email</label>
-            <input
-              type="text"
-              name="email"
-              className="login-input"
-              placeholder="Email"/>
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="login-input"
-              placeholder="Password"/>
-          </div>
-
-          <button
-            type="button" onClick={  this.login }>Log In With Facebook
-            </button>
-        </div>
+      <div className="App">
+        {content}
       </div>
     );
-}
-
+  }
 }
 
 export default App;
