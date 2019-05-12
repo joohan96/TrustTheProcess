@@ -1,20 +1,46 @@
 import React, { Component } from 'react';
 import FacebookLogin from 'react-facebook-login';
 import config from './config.json';
+import axios from 'axios';
+
 
 class App extends Component {
 
   constructor() {
     super();
-    this.state = { isAuthenticated: false, user: null, token: '' };
+    this.state = {
+      isAuthenticated: false,
+      user: null,
+      token: '',
+      selectedfile: null
+    };
   }
 
   logout = () => {
-    this.setState({ isAuthenticated: false, token: '', user: null })
+    this.setState({ isAuthenticated: false, token: '', user: null, selectedFile: null })
   };
   onFailure = (error) => {
     alert(error);
   };
+
+  parsePDF = event => {
+    const data = new FormData() 
+    data.append('file', this.state.selectedFile)
+
+    axios.post('http://localhost:3001/api/v1/parsepdf', data)
+    .then(res => {
+      console.log('response: ', res)
+    })
+  }
+
+  onChangeHandler = event => {
+    this.setState({
+      selectedFile: event.target.files[0],
+      loaded: 0,
+    })
+  }
+
+
 
   facebookResponse = (response) => {
     const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], { type: 'application/json' });
@@ -43,6 +69,11 @@ class App extends Component {
             <button onClick={this.logout} className="button">
               Log out
                         </button>
+            <button onClick={this.parsePDF} className="button">
+              Upload and Process PDF
+                        </button>
+            <input type="file" name="file" onChange={this.onChangeHandler} />
+
           </div>
         </div>
       ) :
