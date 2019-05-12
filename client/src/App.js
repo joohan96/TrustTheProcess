@@ -33,10 +33,9 @@ class App extends Component {
     })
   }
 
-  onChangeHandler = event => {
+  onUploadHandler = event => {
     this.setState({
-      selectedFile: event.target.files[0],
-      loaded: 0,
+      selectedFile: event.target.files[0]
     })
   }
 
@@ -72,7 +71,7 @@ class App extends Component {
             <button onClick={this.parsePDF} className="button">
               Upload and Process PDF
                         </button>
-            <input type="file" name="file" onChange={this.onChangeHandler} />
+            <input type="file" name="file" onChange={this.onUploadHandler} />
 
           </div>
         </div>
