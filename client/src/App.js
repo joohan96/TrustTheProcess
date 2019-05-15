@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import FacebookLogin from 'react-facebook-login';
 import config from './config.json';
 import axios from 'axios';
-import { Doughnut } from 'react-chartjs-2';
+import PieChart from './components/piechart';
 
 
 class App extends Component {
@@ -25,7 +25,7 @@ class App extends Component {
   };
 
   parsePDF = event => {
-    const data = new FormData() 
+    const data = new FormData()
     data.append('file', this.state.selectedFile)
 
     axios.post('http://localhost:3001/api/v1/parsepdf', data)
@@ -39,8 +39,6 @@ class App extends Component {
       selectedFile: event.target.files[0]
     })
   }
-
-
 
   facebookResponse = (response) => {
     const tokenBlob = new Blob([JSON.stringify({ access_token: response.accessToken }, null, 2)], { type: 'application/json' });
@@ -60,45 +58,22 @@ class App extends Component {
     })
   };
 
-
   render() {
-    // Stub data
-    // TODO: populate labels and dataset with parsePDF response's data distribution
-    let data = {
-      labels: [
-        "Food",
-        "Retail",
-        "Health and Education"
-      ],
-      datasets: [
-        {
-          data: [50, 30, 20],
-          backgroundColor: [
-            "#FF6384",
-            "#36A2EB",
-            "#FFCE56"
-          ],
-          hoverBackgroundColor: [
-            "#FF6384",
-            "#36A2EB",
-            "#FFCE56"
-          ]
-        }],
-    };
     let content = !!this.state.isAuthenticated ?
       (
         <div>
           <p>Welcome to TrustTheProcess, {this.state.user.fullName} </p>
-          <Doughnut data={data} width={ 300} height={ 150} options={{ maintainAspectRatio: false }}/>
+          <PieChart onRef={ref => (this.PieChart = ref)} />
           <div>
             <button onClick={this.logout} className="button">
               Log out
-                        </button>
+              </button>
+
             <button onClick={this.parsePDF} className="button">
               Upload and Process PDF
-                        </button>
-            <input type="file" name="file" onChange={this.onUploadHandler} />
+              </button>
 
+            <input type="file" name="file" onChange={this.onUploadHandler} />
           </div>
         </div>
       ) :
