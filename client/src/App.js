@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import FacebookLogin from 'react-facebook-login';
 import config from './config.json';
 import axios from 'axios';
+import { Doughnut } from 'react-chartjs-2';
 
 
 class App extends Component {
@@ -28,9 +29,9 @@ class App extends Component {
     data.append('file', this.state.selectedFile)
 
     axios.post('http://localhost:3001/api/v1/parsepdf', data)
-    .then(res => {
-      console.log('response: ', res)
-    })
+      .then(res => {
+        console.log('response: ', res)
+      })
   }
 
   onUploadHandler = event => {
@@ -59,11 +60,36 @@ class App extends Component {
     })
   };
 
+
   render() {
+    // Stub data
+    // TODO: populate labels and dataset with parsePDF response's data distribution
+    let data = {
+      labels: [
+        "Food",
+        "Retail",
+        "Health and Education"
+      ],
+      datasets: [
+        {
+          data: [50, 30, 20],
+          backgroundColor: [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56"
+          ],
+          hoverBackgroundColor: [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56"
+          ]
+        }],
+    };
     let content = !!this.state.isAuthenticated ?
       (
         <div>
           <p>Welcome to TrustTheProcess, {this.state.user.fullName} </p>
+          <Doughnut data={data} width={ 300} height={ 150} options={{ maintainAspectRatio: false }}/>
           <div>
             <button onClick={this.logout} className="button">
               Log out
