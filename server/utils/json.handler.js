@@ -2,16 +2,15 @@
 // %24 = '$'
 
 class jsonHandler {
-    constructor(input) {
-        this.inputJsonData = input;
+    constructor() {
     }
-    getTransactions() {
-        var jsonData = this.inputJsonData.formImage.Pages
-        
+    getTransactions(inputJsonData) {
+        var jsonData = inputJsonData.formImage.Pages
         var ret = [];
         // ws = [];
         var ys = [];
         var xs = [];
+        
         for (var key in jsonData) {
             // Every index contains the data of each page
             var pageTexts = jsonData[key].Texts;

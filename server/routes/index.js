@@ -4,6 +4,7 @@ var { generateToken, sendToken } = require('../utils/token.utils');
 var passport = require('passport');
 var PDFParser = require("pdf2json");
 var jsonHandler = require('../utils/json.handler');
+var Classifier = require('../utils/classifier');
 var multer = require('multer')
 require('../passport')();
 
@@ -44,19 +45,33 @@ router.post('/parsepdf', function (req, res) {
         try {
             parser.on("pdfParser_dataError", errData => console.error(errData.parserError));
             parser.on("pdfParser_dataReady", pdfData => {
-                var jsonhandler = new jsonHandler(pdfData);
-                var transactions = jsonhandler.getTransactions();
-                console.log(JSON.stringify(transactions));
-                //* TODO: classify the transactions
+                var jsonhandler = new jsonHandler();
+                var classifier = new Classifier();
+
+                var transactions = jsonhandler.getTransactions(pdfData);
+                //console.log(JSON.stringify(transactions));
+
+                let fakedata = ['zara clothing store'];
+                classifier.classify(fakedata).then((data) => {
+                    console.log(data);
+                });
+
+                //* TODO: Loop through transactions to classify 
+                // for (var key in transactions) {
+                //     classifier.classify(transactions[key]).then((data) => {
+                //         console.log(data);
+                //     });
+                // }
             })
-            
+
             parser.loadPDF("./uploads/" + req.file.filename);
-            
+
             return res.status(200).send(req.file)
-        } catch(e) {
+        } catch (e) {
             console.error(e);
+            res.status(500).json(err)
         }
     })
- })
+})
 
 module.exports = router;
