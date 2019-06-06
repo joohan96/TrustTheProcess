@@ -53,7 +53,7 @@ router.post('/parsepdf', function (req, res) {
 
                 let fakedata = ['zara clothing store'];
                 classifier.classify(fakedata).then((data) => {
-                    console.log(data);
+                    console.log(data.categories[0].label);
                 });
 
                 //* TODO: Loop through transactions to classify 

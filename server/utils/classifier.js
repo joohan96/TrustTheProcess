@@ -23,7 +23,7 @@ class Classifier {
 
         return naturalLanguageUnderstanding.analyze(analyzeParams)
             .then(analysisResults => {
-                console.log(JSON.stringify(analysisResults, null, 2));
+                //console.log(JSON.stringify(analysisResults, null, 2));
                 return analysisResults;
             })
             .catch(err => {
