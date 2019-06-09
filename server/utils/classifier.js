@@ -10,10 +10,8 @@ class Classifier {
     }
 
     classify(data) {
-        console.log("im here");
-        console.log(data);
         let analyzeParams = {
-            'text': data, // Changed this to just data because I'm no longer sending in JSON
+            'text': data,
             'features': {
                 'categories': {
                     'limit': 1
@@ -23,8 +21,7 @@ class Classifier {
 
         return naturalLanguageUnderstanding.analyze(analyzeParams)
             .then(analysisResults => {
-                //console.log(JSON.stringify(analysisResults, null, 2));
-                console.log("Analyzed Results: " + analysisResults);
+
                 return analysisResults;
             })
             .catch(err => {
